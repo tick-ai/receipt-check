@@ -28,7 +28,13 @@ company serves at `/.well-known/tick-keys.json`:
 ```json
 {
   "schema": "tick-keys/1",
-  "keys": [{ "key_id": "0123456789abcdef", "role": "coordinator", "from": "2026-10-30" }]
+  "keys": [
+    {
+      "key_id": "0123456789abcdef",
+      "role": "coordinator",
+      "from": "2026-10-30"
+    }
+  ]
 }
 ```
 

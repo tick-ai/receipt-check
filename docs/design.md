@@ -77,7 +77,7 @@ no repository, no notes ref, or a key list that fails its check.
   `receipt_check/_vendor/tick_verify`, the commit written in
   `receipt_check/_vendor/VENDORED.md`, so the check installs nothing.
 - `python -m receipt_check [--repo PATH] [--branch NAME] [--keys FILE]
-  [--since COMMIT] [--wait-seconds N]` prints one line per commit checked and a
+[--since COMMIT] [--wait-seconds N]` prints one line per commit checked and a
   summary.
 - `action.yml`, a composite GitHub Action: it checks out with the whole history,
   fetches the notes ref and runs the module. Inputs: `branch`, `keys`, `since`,
