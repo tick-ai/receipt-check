@@ -50,7 +50,7 @@ jobs:
   receipt-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: OWNER/receipt-check@COMMIT_SHA
+      - uses: tick-ai/receipt-check@a384bb753ab599298afa94d11db89a5a2741be6c
         with:
           branch: main
           keys: .tick/keys.json
@@ -59,6 +59,8 @@ jobs:
 Pin the action to a full commit sha. The newest landing's note arrives about a
 minute after the push, so the run waits up to `wait-seconds` for it before it
 fails the commit.
+
+This repository runs the check on itself: .github/workflows/receipts.yml.
 
 ## Checks
 
