@@ -1,8 +1,18 @@
-# What the work in this repository runs on: Python 3.10 or later, its standard
-# library alone. The package's own metadata comes with its first task.
 [project]
 name = "tick-receipt-check"
-version = "0.0.0"
+version = "0.1.0"
+description = "Check that every commit an agent lands carries a Tick receipt that verifies, signed by a key the repository allows."
+readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = []
+
+[project.scripts]
+tick-receipt-check = "receipt_check.__main__:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["receipt_check"]
