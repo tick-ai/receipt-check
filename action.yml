@@ -1,0 +1,41 @@
+name: receipt-check
+description: Check that every commit an agent landed on a branch carries a receipt that verifies, signed by a key the repository allows.
+inputs:
+  branch:
+    description: The branch whose landings are checked.
+    default: main
+  keys:
+    description: The keys the repository allows, a tick-keys/1 document, read from inside the repository.
+    default: .tick/keys.json
+  since:
+    description: The last commit not checked. Empty means the repository's first commit.
+    default: ""
+  wait-seconds:
+    description: How long to wait for the notes of the newest landings before failing them.
+    default: "180"
+runs:
+  using: composite
+  steps:
+    - name: Check out the whole history
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        fetch-depth: 0
+    - name: Fetch the receipts
+      shell: bash
+      run: git fetch origin refs/notes/tick:refs/notes/tick
+    - name: Check the receipts
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        INPUT_BRANCH: ${{ inputs.branch }}
+        INPUT_KEYS: ${{ inputs.keys }}
+        INPUT_SINCE: ${{ inputs.since }}
+        INPUT_WAIT_SECONDS: ${{ inputs.wait-seconds }}
+      run: |
+        set -eu
+        args=(--repo="$GITHUB_WORKSPACE" --branch="$INPUT_BRANCH" --keys="$INPUT_KEYS" --wait-seconds="$INPUT_WAIT_SECONDS")
+        if [ -n "$INPUT_SINCE" ]; then
+          args+=(--since="$INPUT_SINCE")
+        fi
+        cd "$ACTION_PATH"
+        python3 -m receipt_check "${args[@]}"
