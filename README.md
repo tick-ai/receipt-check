@@ -33,6 +33,33 @@ company serves at `/.well-known/tick-keys.json`:
 }
 ```
 
+## Use it in GitHub Actions
+
+This repository is a composite action: it checks out with the whole history,
+fetches `refs/notes/tick` and runs the module with the runner's own Python 3.
+Its inputs are `branch` (default `main`), `keys` (default `.tick/keys.json`),
+`since` (default empty: the repository's first commit) and `wait-seconds`
+(default `180`).
+
+```yaml
+name: receipts
+on:
+  push:
+    branches: [main]
+jobs:
+  receipt-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: OWNER/receipt-check@COMMIT_SHA
+        with:
+          branch: main
+          keys: .tick/keys.json
+```
+
+Pin the action to a full commit sha. The newest landing's note arrives about a
+minute after the push, so the run waits up to `wait-seconds` for it before it
+fails the commit.
+
 ## Checks
 
 `python -m unittest discover -s tests -t . -v` runs every test; Tick runs the
