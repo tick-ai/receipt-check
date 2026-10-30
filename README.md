@@ -6,12 +6,6 @@ receipts that travel with the code, the git notes Tick writes under
 `refs/notes/tick`, and checks each one offline with a verifier written from
 [spec/SPEC.md](spec/SPEC.md). It needs Python 3.10 or later and nothing else.
 
-**Not usable yet.** This commit holds the contract,
-[docs/design.md](docs/design.md): what is read, what fails a commit, and the
-exit codes. Until the check exists, `python -m receipt_check` says it cannot
-check yet and exits 2, so a workflow that runs it is never green. This line goes
-with the commit that makes it check.
-
 ## Use
 
 ```sh
@@ -20,7 +14,8 @@ python -m receipt_check --branch main --keys .tick/keys.json
 
 It prints one line per commit and a summary, and exits 0 when every landing
 carries receipts that verify under an allowed key, 1 when one does not, and 2
-when it could not check.
+when it could not check. A `--keys` path that is not absolute is read from
+inside the repository (`--repo`).
 
 The keys a repository allows are a `tick-keys/1` document, the same file a
 company serves at `/.well-known/tick-keys.json`:
