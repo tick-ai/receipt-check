@@ -1,21 +1,20 @@
 """python -m receipt_check: does every landing on a branch carry receipts that verify?
 
 The command and its options are the contract docs/design.md sets; the check
-itself comes with the tasks that follow. Until then it never passes: it says it
-cannot check yet and exits 2, as it would for any check it could not run, so a
-workflow that runs it is never green on a repository it has not checked.
+itself is receipt_check.check. Exit 0 when no commit fails, 1 when one does, 2 when
+the check could not run.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+import time
 from typing import Callable, Sequence
 
-# Exit codes, as docs/design.md defines them.
-EXIT_PASSED = 0
-EXIT_FAILED = 1
-EXIT_CANNOT_RUN = 2
+from .check import EXIT_CANNOT_RUN, EXIT_FAILED, EXIT_PASSED, CannotRun, Clock, Fetch, Sleep, check, git_fetch
+
+__all__ = ["EXIT_CANNOT_RUN", "EXIT_FAILED", "EXIT_PASSED", "main", "parser", "run"]
 
 
 def parser() -> argparse.ArgumentParser:
@@ -45,14 +44,24 @@ def parser() -> argparse.ArgumentParser:
     return made
 
 
-def run(argv: Sequence[str], err: Callable[[str], None]) -> int:
-    parser().parse_args(list(argv))
-    err("receipt_check: cannot check yet: this commit holds only the contract (docs/design.md)")
-    return EXIT_CANNOT_RUN
+def run(
+    argv: Sequence[str],
+    out: Callable[[str], None],
+    err: Callable[[str], None],
+    clock: Clock = time.time,
+    sleep: Sleep = time.sleep,
+    fetch: Fetch = git_fetch,
+) -> int:
+    args = parser().parse_args(list(argv))
+    try:
+        return check(args.repo, args.branch, args.keys, args.since, args.wait_seconds, out, err, clock, sleep, fetch)
+    except CannotRun as error:
+        err(f"receipt_check: cannot check: {error}")
+        return EXIT_CANNOT_RUN
 
 
 def main() -> int:
-    return run(sys.argv[1:], lambda line: print(line, file=sys.stderr))
+    return run(sys.argv[1:], print, lambda line: print(line, file=sys.stderr))
 
 
 if __name__ == "__main__":
