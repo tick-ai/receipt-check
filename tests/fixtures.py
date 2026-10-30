@@ -98,10 +98,14 @@ class Fixture:
         return self.git("rev-parse", "HEAD")
 
     def plain_commit(self, subject: str = "A change made by hand") -> str:
-        return self.commit_file(self.next_id("hand"), subject)
+        sha = self.commit_file(self.next_id("hand"), subject)
+        self.git("push", "--quiet", "origin", "main")
+        return sha
 
     def release(self, version: str = "1.0.0") -> str:
-        return self.commit_file("VERSION", f"release {version}")
+        sha = self.commit_file("VERSION", f"release {version}")
+        self.git("push", "--quiet", "origin", "main")
+        return sha
 
     def land(self, tasks: tuple[str, ...] | None = None, at: int | None = None) -> Landing:
         """A landing as Tick makes it: each task on its own attempt branch from main, merged into a
